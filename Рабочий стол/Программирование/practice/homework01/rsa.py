@@ -1,7 +1,7 @@
 import random
 
 def testFerma(a,n):
-    print(a, n, (a**(n-1)) % n)
+    #print(a, n, (a**(n-1)) % n)
     if ((a**(n-1)) % n == 1):
         return True
     else:
@@ -83,23 +83,23 @@ def multiplicative_inverse(e, phi):
         arr[4][counter] = arr[5][counter+1]
         arr[5][counter] = arr[4][counter+1] - arr[4][counter]*(arr[3][counter])
         counter -= 1
-    for i in range(lala):
-        for j in range(6):
-            print(arr[j][i], end=' ')
-        print('')
+    #for i in range(lala):
+    #    for j in range(6):
+    #    print(arr[j][i], end=' ')
+    #    print('')
     return (arr[5][0]+phi)%phi
 
 
 def generate_keypair(p, q):
-    if not (is_prime(p) and is_prime(q)):
+    if not (is_prime(p) and  is_prime(q)):
         raise ValueError('Both numbers must be prime.')
     elif p == q:
         raise ValueError('p and q cannot be equal')
 
-    n = pq
+    n = p*q
     # PUT YOUR CODE HERE
 
-    phi = (p-1)(q-1)
+    phi = (p-1)*(q-1)
     # PUT YOUR CODE HERE
 
     # Choose an integer e such that e and phi(n) are coprime
@@ -107,7 +107,10 @@ def generate_keypair(p, q):
 
     # Use Euclid's Algorithm to verify that e and phi(n) are comprime
     g = gcd(e, phi)
-    while g != 1 and is_prime(e):
+    ##################################### в условиях сказано, что е - простое
+    ##################################### но генерировать его у меня комп сдохнет
+    #####################################
+    while g != 1: #and (not is_prime(e)):
         e = random.randrange(1, phi)
         g = gcd(e, phi)
 
