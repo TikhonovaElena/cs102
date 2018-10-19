@@ -55,8 +55,39 @@ def multiplicative_inverse(e, phi):
     >>> multiplicative_inverse(7, 40)
     23
     """
-    # PUT YOUR CODE HERE
-    pass
+    arr = [[],[],[],[],[],[]]
+    b = e
+    a = phi
+    counter = 0
+    while(a%b != 0):
+        arr[0].append(a)
+        arr[1].append(b)
+        arr[2].append(a%b)
+        arr[3].append(a//b)
+        arr[4].append(0)
+        arr[5].append(0)
+        counter += 1
+        c = a % b
+        a = b
+        b = c
+    else:
+        arr[0].append(a)
+        arr[1].append(b)
+        arr[2].append(a%b)
+        arr[3].append(a//b)
+        arr[4].append(0)
+        arr[5].append(1)
+        counter -= 1
+    lala = counter + 2
+    while counter >= 0:
+        arr[4][counter] = arr[5][counter+1]
+        arr[5][counter] = arr[4][counter+1] - arr[4][counter]*(arr[3][counter])
+        counter -= 1
+    for i in range(lala):
+        for j in range(6):
+            print(arr[j][i], end=' ')
+        print('')
+    return (arr[5][0]+phi)%phi
 
 
 def generate_keypair(p, q):
@@ -65,10 +96,10 @@ def generate_keypair(p, q):
     elif p == q:
         raise ValueError('p and q cannot be equal')
 
-    # n = pq
+    n = pq
     # PUT YOUR CODE HERE
 
-    # phi = (p-1)(q-1)
+    phi = (p-1)(q-1)
     # PUT YOUR CODE HERE
 
     # Choose an integer e such that e and phi(n) are coprime
@@ -76,7 +107,7 @@ def generate_keypair(p, q):
 
     # Use Euclid's Algorithm to verify that e and phi(n) are comprime
     g = gcd(e, phi)
-    while g != 1:
+    while g != 1 and is_prime(e):
         e = random.randrange(1, phi)
         g = gcd(e, phi)
 
