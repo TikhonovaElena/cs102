@@ -43,5 +43,3 @@ def decrypt_caesar(ciphertext):
             plaintext += char
     return plaintext
 
-print(encrypt_caesar(input()))
-print(decrypt_caesar(input()))
