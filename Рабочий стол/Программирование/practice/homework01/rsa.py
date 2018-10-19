@@ -17,7 +17,6 @@ def is_prime(n):
     >>> is_prime(8)
     False
     """
-    # PUT YOUR CODE HERE
     isPrime = True
     lala = 1
     for i in range(0,100):
@@ -41,8 +40,12 @@ def gcd(a, b):
     >>> gcd(3, 7)
     1
     """
-    # PUT YOUR CODE HERE
-    pass
+    if a == b:
+        return a
+    elif a == 0:
+        return b
+    else:
+        return gcd(b%a, a)
 
 
 def multiplicative_inverse(e, phi):
