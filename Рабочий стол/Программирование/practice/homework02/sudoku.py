@@ -95,7 +95,6 @@ def find_empty_positions(grid):
         for j in range(len(grid[i])):
             if grid[i][j] == '.':
                 return (i,j)
-    # надо потом подумать, что делать, если свободных позиций нет
 
 
 def find_possible_values(grid, pos):
@@ -128,11 +127,16 @@ def solve(grid):
             3.1. Поместить это значение на эту позицию
             3.2. Продолжить решать оставшуюся часть пазла
 
-    >>> grid = read_sudoku('puzzle1.txt')
+    >>> grid = read_sudoku('../homework02/puzzle1.txt')
     >>> solve(grid)
     [['5', '3', '4', '6', '7', '8', '9', '1', '2'], ['6', '7', '2', '1', '9', '5', '3', '4', '8'], ['1', '9', '8', '3', '4', '2', '5', '6', '7'], ['8', '5', '9', '7', '6', '1', '4', '2', '3'], ['4', '2', '6', '8', '5', '3', '7', '9', '1'], ['7', '1', '3', '9', '2', '4', '8', '5', '6'], ['9', '6', '1', '5', '3', '7', '2', '8', '4'], ['2', '8', '7', '4', '1', '9', '6', '3', '5'], ['3', '4', '5', '2', '8', '6', '1', '7', '9']]
     """
-    pass
+    solution = []
+    try:
+        solution = find_possible_values(grid, find_empty_positions(grid))
+    except Exception:
+        pass
+    return solution
 
 
 def check_solution(solution):
