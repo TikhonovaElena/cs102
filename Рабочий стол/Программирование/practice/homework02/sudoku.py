@@ -58,13 +58,16 @@ def get_col(values, pos):
     >>> get_col([['1', '2', '3'], ['4', '5', '6'], ['.', '8', '9']], (0, 2))
     ['3', '6', '9']
     """
-    pass
+    column = []
+    for i in range(len(values)):
+        column.append(values[i][pos[1]])
+    return column
 
 
 def get_block(values, pos):
     """ Возвращает все значения из квадрата, в который попадает позиция pos
 
-    >>> grid = read_sudoku('puzzle1.txt')
+    >>> grid = read_sudoku('../homework02/puzzle1.txt')
     >>> get_block(grid, (0, 1))
     ['5', '3', '.', '6', '.', '.', '.', '9', '8']
     >>> get_block(grid, (4, 7))
@@ -72,7 +75,10 @@ def get_block(values, pos):
     >>> get_block(grid, (8, 8))
     ['2', '8', '.', '.', '.', '5', '.', '7', '9']
     """
-    pass
+    block = []
+    for i in range(len(values)):
+        block.append(values[(pos[0]//3)*3 + i//3][(pos[1]//3)*3 + i%3])
+    return block
 
 
 def find_empty_positions(grid):
