@@ -101,7 +101,7 @@ def find_empty_positions(grid):
 def find_possible_values(grid, pos):
     """ Вернуть множество возможных значения для указанной позиции
 
-    >>> grid = read_sudoku('puzzle1.txt')
+    >>> grid = read_sudoku('../homework02/puzzle1.txt')
     >>> values = find_possible_values(grid, (0,2))
     >>> values == {'1', '2', '4'}
     True
@@ -109,7 +109,14 @@ def find_possible_values(grid, pos):
     >>> values == {'2', '5', '9'}
     True
     """
-    pass
+    values = {'1', '2', '3', '4', '5', '6', '7', '8', '9'}
+    for value in get_col(grid, pos):
+        values.discard(value)
+    for value in get_row(grid, pos):
+        values.discard(value)
+    for value in get_block(grid, pos):
+        values.discard(value)
+    return values
 
 
 def solve(grid):
