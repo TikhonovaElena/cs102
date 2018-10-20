@@ -25,7 +25,14 @@ def group(values, n):
     >>> group([1,2,3,4,5,6,7,8,9], 3)
     [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
     """
-    pass
+    grid = []
+    for i in range(n):
+        line = []
+        for j in range(n):
+            line.append(values[i*n + j])
+        grid.append(line)
+    return grid
+
 
 
 def get_row(values, pos):
