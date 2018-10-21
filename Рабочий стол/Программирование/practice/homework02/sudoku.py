@@ -1,3 +1,7 @@
+import random
+import time
+import multiprocessing
+
 def read_sudoku(filename):
     """ Прочитать Судоку из указанного файла """
     digits = [c for c in open(filename).read() if c in '123456789.']
@@ -188,12 +192,83 @@ def generate_sudoku(N):
     >>> check_solution(solution)
     True
     """
-    pass
+    grid = mix(read_sudoku('grid.txt'),random.randint(10,20))
+    pos = (random.randint(0,8), random.randint(0,8))
+    for i in range(81-N):
+        while grid[pos[0]][pos[1]] == '.':
+            pos = (random.randint(0,8), random.randint(0,8))
+        grid[pos[0]][pos[1]] = '.'
+    return grid
 
+
+
+
+
+
+def tilt(grid):
+    grid_result = []
+    #grid_line = []
+    #grid_result[i].append([grid_line.append([grid[j][i] for j in range(9)]) for i in range(9)])
+    for i in range(9):
+        grid_line = []
+        for j in range(9):
+            grid_line.append(grid[j][i])
+        grid_result.append(grid_line)
+    return grid_result
+def swap_lines(grid):
+    grid_result = []
+    row = random.randint(0,8)
+    row_swap = (row%3+random.randint(1,2))%3 + (row//3)*3
+    for i in range(9):
+        if i == row:
+            grid_result.append(grid[row_swap])
+        elif i == row_swap:
+            grid_result.append(grid[row])
+        else:
+            grid_result.append(grid[i])
+    return grid_result
+def swap_columns(grid):
+    return tilt(swap_lines(tilt(grid)))
+def swap_lines_x3(grid):
+    #здесь один ряд  - это три ряда
+    grid_result = []
+    row = random.randint(0,2)
+    row_swap = (row + random.randint(1,2))%3
+    for i in range(9):
+        if i//3  == row:
+            grid_result.append(grid[3*row_swap+i%3])
+        elif i//3 == row_swap:
+            grid_result.append(grid[3*row+i%3])
+        else:
+            grid_result.append(grid[i])
+    return grid_result
+def swap_columns_x3(grid):
+    return tilt(swap_lines_x3(tilt(grid)))
+def mix(grid,amt = 10):
+    if amt != 0:
+        action = random.randint(0,4)
+        if action == 0:
+            return mix(tilt(grid),amt-1)
+        elif action == 1:
+            return mix(swap_lines(grid),amt-1)
+        elif action == 2:
+            return mix(swap_columns(grid),amt-1)
+        elif action == 3:
+            return mix(swap_lines_x3(grid),amt-1)
+        else:
+            return mix(swap_columns_x3(grid),amt-1)
+    return grid
+
+
+
+def run_solve(fname):
+    grid = read_sudoku(fname)
+    start = time.time()
+    solve(grid)
+    end = time.time()
+    print(f'{fname}: {end-start}')
 
 if __name__ == '__main__':
-    for fname in ['puzzle1.txt', 'puzzle2.txt', 'puzzle3.txt']:
-        grid = read_sudoku(fname)
-        display(grid)
-        solution = solve(grid)
-        display(solution)
+    for fname in ('puzzle1.txt', 'puzzle2.txt', 'puzzle3.txt'):
+        p = multiprocessing.Process(target=run_solve, args=(fname,))
+        p.start()
