@@ -1,6 +1,6 @@
 import random
 import time
-import threading
+import multiprocessing
 
 def read_sudoku(filename):
     """ Прочитать Судоку из указанного файла """
@@ -270,5 +270,5 @@ def run_solve(fname):
 
 if __name__ == '__main__':
     for fname in ('puzzle1.txt', 'puzzle2.txt', 'puzzle3.txt'):
-        t = threading.Thread(target=run_solve, args=(fname,))
-        t.start()
+        p = multiprocessing.Process(target=run_solve, args=(fname,))
+        p.start()
