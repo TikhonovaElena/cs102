@@ -1,4 +1,7 @@
 import random
+import time
+import threading
+
 def read_sudoku(filename):
     """ Прочитать Судоку из указанного файла """
     digits = [c for c in open(filename).read() if c in '123456789.']
@@ -257,9 +260,15 @@ def mix(grid,amt = 10):
     return grid
 
 
+
+def run_solve(fname):
+    grid = read_sudoku(fname)
+    start = time.time()
+    solve(grid)
+    end = time.time()
+    print(f'{fname}: {end-start}')
+
 if __name__ == '__main__':
-    for fname in ['puzzle1.txt', 'puzzle2.txt', 'puzzle3.txt']:
-        grid = read_sudoku(fname)
-        display(grid)
-        solution = solve(grid)
-        display(solution)
+    for fname in ('puzzle1.txt', 'puzzle2.txt', 'puzzle3.txt'):
+        t = threading.Thread(target=run_solve, args=(fname,))
+        t.start()
