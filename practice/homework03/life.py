@@ -40,6 +40,7 @@ class GameOfLife:
 
         # Создание списка клеток
         # PUT YOUR CODE HERE
+        self.clist = self.cell_list(randomize=True)
 
         running = True
         while running:
@@ -50,7 +51,7 @@ class GameOfLife:
 
             # Отрисовка списка клеток
             # Выполнение одного шага игры (обновление состояния ячеек)
-            self.draw_cell_list(self.cell_list(randomize=True))
+            self.draw_cell_list(self.update_cell_list(self.clist))
             # PUT YOUR CODE HERE
 
             pygame.display.flip()
@@ -70,7 +71,7 @@ class GameOfLife:
         		line = []
         		for col in range(self.cell_width):
         			line.append(random.randint(0,1))
-        		self.clist.append(line)     
+        		self.clist.append(line)  
         return self.clist
 
     def draw_cell_list(self, clist):
@@ -90,13 +91,14 @@ class GameOfLife:
         :param cell: Позиция ячейки в сетке, задается кортежем вида (row, col)
         :return: Одномерный список ячеек, смежных к ячейке cell
         """
-        neighbours = []
+        counter = 0
+        neighbours = [[0 for col in range(len(self.clist[0]))] for row in range(len(self.clist)) ]
         for row in range(cell[0]-1,cell[0]+2):
         	for col in range(cell[1]-1,cell[1]+2):
-        		if (0 <= row <= len(self.clist)) and (0 <= col <= len(self.clist[0])) and (row != cell[0] or col != cell[1]):
-        			neighbours.append((row,col))
+        		if (0 <= row < len(self.clist)) and (0 <= col < len(self.clist[0])) and (row != cell[0] or col != cell[1]) and (self.clist[row][col] == 1):
+        			counter += 1
         # PUT YOUR CODE HERE
-        return neighbours
+        return counter
 
     def update_cell_list(self, cell_list):
         """ Выполнить один шаг игры.
@@ -107,6 +109,11 @@ class GameOfLife:
         :param cell_list: Игровое поле, представленное в виде матрицы
         :return: Обновленное игровое поле
         """
-        new_clist = []
+        new_clist = [[0 for col in range(len(cell_list[0]))] for row in range(len(cell_list))]
+        for row in range(len(cell_list)):
+        	for col in range(len(cell_list[0])):
+        		if (self.get_neighbours((row,col)) == 3) or (self.get_neighbours((row,col)) == 2) and (self.clist[row][col] == 1):
+        			new_clist[row][col] = 1
         # PUT YOUR CODE HERE
+        self.clist = new_clist
         return self.clist
