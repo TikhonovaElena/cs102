@@ -91,6 +91,10 @@ class GameOfLife:
         :return: Одномерный список ячеек, смежных к ячейке cell
         """
         neighbours = []
+        for row in range(cell[0]-1,cell[0]+2):
+        	for col in range(cell[1]-1,cell[1]+2):
+        		if (0 <= row <= len(self.clist)) and (0 <= col <= len(self.clist[0])) and (row != cell[0] or col != cell[1]):
+        			neighbours.append((row,col))
         # PUT YOUR CODE HERE
         return neighbours
 
