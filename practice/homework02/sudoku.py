@@ -207,8 +207,6 @@ def generate_sudoku(N):
 
 def tilt(grid):
     grid_result = []
-    #grid_line = []
-    #grid_result[i].append([grid_line.append([grid[j][i] for j in range(9)]) for i in range(9)])
     for i in range(9):
         grid_line = []
         for j in range(9):
