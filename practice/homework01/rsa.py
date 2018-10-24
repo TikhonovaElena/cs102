@@ -1,4 +1,6 @@
 import random
+import math
+
 
 def is_prime(n):
     """
@@ -11,11 +13,11 @@ def is_prime(n):
     False
     """
     isPrime = True
-    if n % 2 = 0:
+    if n % 2 == 0:
         return False
     i = 3
-    while i <= sqrt(n):
-        if n%i == 0:
+    while i <= math.sqrt(n):
+        if n % i == 0:
             return False
         i += 2
     return isPrime
@@ -34,7 +36,7 @@ def gcd(a, b):
     elif a == 0:
         return b
     else:
-        return gcd(b%a, a)
+        return gcd(b % a, a)
 
 
 def multiplicative_inverse(e, phi):
@@ -44,15 +46,15 @@ def multiplicative_inverse(e, phi):
     >>> multiplicative_inverse(7, 40)
     23
     """
-    arr = [[],[],[],[],[],[]]
+    arr = [[], [], [], [], [], []]
     b = e
     a = phi
     counter = 0
-    while(a%b != 0):
+    while(a % b != 0):
         arr[0].append(a)
         arr[1].append(b)
-        arr[2].append(a%b)
-        arr[3].append(a//b)
+        arr[2].append(a % b)
+        arr[3].append(a // b)
         arr[4].append(0)
         arr[5].append(0)
         counter += 1
@@ -62,8 +64,8 @@ def multiplicative_inverse(e, phi):
     else:
         arr[0].append(a)
         arr[1].append(b)
-        arr[2].append(a%b)
-        arr[3].append(a//b)
+        arr[2].append(a % b)
+        arr[3].append(a // b)
         arr[4].append(0)
         arr[5].append(1)
         counter -= 1
@@ -72,28 +74,25 @@ def multiplicative_inverse(e, phi):
         arr[4][counter] = arr[5][counter+1]
         arr[5][counter] = arr[4][counter+1] - arr[4][counter]*(arr[3][counter])
         counter -= 1
-    return (arr[5][0]+phi)%phi
+    return (arr[5][0] + phi) % phi
 
 
 def generate_keypair(p, q):
-    if not (is_prime(p) and  is_prime(q)):
+    if not (is_prime(p) and is_prime(q)):
         raise ValueError('Both numbers must be prime.')
     elif p == q:
         raise ValueError('p and q cannot be equal')
 
-    n = p*q
+    n = p * q
 
-    phi = (p-1)*(q-1)
+    phi = (p - 1) * (q - 1)
 
     # Choose an integer e such that e and phi(n) are coprime
     e = random.randrange(1, phi)
 
     # Use Euclid's Algorithm to verify that e and phi(n) are comprime
     g = gcd(e, phi)
-    ##################################### в условиях сказано, что е - простое
-    ##################################### но генерировать его у меня комп сдохнет
-    #####################################
-    while g != 1: #and (not is_prime(e)):
+    while g != 1:
         e = random.randrange(1, phi)
         g = gcd(e, phi)
 

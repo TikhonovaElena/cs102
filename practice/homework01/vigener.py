@@ -11,9 +11,13 @@ def encrypt_vigenere(plaintext, keyword):
     pos = 0
     for char in plaintext:
         if ord('a') <= ord(char) <= ord('z'):
-            ciphertext += chr((ord(char)+(ord(keyword[pos%len(keyword)]))-ord('a'))%26+ord('a'))
+            ciphertext += chr(
+                (ord(char) + (ord(keyword[pos % len(keyword)])) - ord('a')) %
+                26 + ord('a'))
         elif ord('A') <= ord(char) <= ord('Z'):
-            ciphertext += chr((ord(char)+(ord(keyword[pos%len(keyword)]))-ord('A'))%26+ord('A'))
+            ciphertext += chr(
+                (ord(char) + (ord(keyword[pos % len(keyword)])) - ord('A')) %
+                26 + ord('A'))
         else:
             ciphertext += char
         pos += 1
@@ -29,14 +33,21 @@ def decrypt_vigenere(ciphertext, keyword):
     >>> decrypt_vigenere("LXFOPVEFRNHR", "LEMON")
     'ATTACKATDAWN'
     """
-   
     plaintext = ''
     pos = 0
     for char in ciphertext:
         if ord('a') <= ord(char) <= ord('z'):
-            plaintext += chr((ord(char)-(ord(keyword[pos%len(keyword)]))+26-ord('a'))%26+ord('a'))
+            plaintext += chr(
+                (ord(char) - (
+                    ord(keyword[pos % len(keyword)])) +
+                    26 - ord('a')) %
+                26 + ord('a'))
         elif ord('A') <= ord(char) <= ord('Z'):
-            plaintext += chr((ord(char)-(ord(keyword[pos%len(keyword)]))+26-ord('A'))%26+ord('A'))
+            plaintext += chr(
+                (ord(char) - (
+                    ord(keyword[pos % len(keyword)])) +
+                    26 - ord('A')) %
+                26 + ord('A'))
         else:
             plaintext += char
         pos += 1
