@@ -10,10 +10,10 @@ def encrypt_vigenere(plaintext, keyword):
     ciphertext = ''
     pos = 0
     for char in plaintext:
-        if 65 <= ord(char) <= 90:
-            ciphertext += chr((ord(char)+(ord(keyword[pos%len(keyword)]))-65)%26+65)
-        elif 97 <= ord(char) <= 122:
-            ciphertext += chr((ord(char)+(ord(keyword[pos%len(keyword)]))-97)%26+97)
+        if ord('a') <= ord(char) <= ord('z'):
+            ciphertext += chr((ord(char)+(ord(keyword[pos%len(keyword)]))-ord('a'))%26+ord('a'))
+        elif ord('A') <= ord(char) <= ord('Z'):
+            ciphertext += chr((ord(char)+(ord(keyword[pos%len(keyword)]))-ord('A'))%26+ord('A'))
         else:
             ciphertext += char
         pos += 1
@@ -33,10 +33,10 @@ def decrypt_vigenere(ciphertext, keyword):
     plaintext = ''
     pos = 0
     for char in ciphertext:
-        if 65 <= ord(char) <= 90:
-            plaintext += chr((ord(char)-(ord(keyword[pos%len(keyword)]))+26-65)%26+65)
-        elif 97 <= ord(char) <= 122:
-            plaintext += chr((ord(char)-(ord(keyword[pos%len(keyword)]))+26-97)%26+97)
+        if ord('a') <= ord(char) <= ord('z'):
+            plaintext += chr((ord(char)-(ord(keyword[pos%len(keyword)]))+26-ord('a'))%26+ord('a'))
+        elif ord('A') <= ord(char) <= ord('Z'):
+            plaintext += chr((ord(char)-(ord(keyword[pos%len(keyword)]))+26-ord('A'))%26+ord('A'))
         else:
             plaintext += char
         pos += 1
