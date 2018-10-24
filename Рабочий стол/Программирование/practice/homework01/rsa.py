@@ -1,12 +1,5 @@
 import random
 
-def testFerma(a,n):
-    #print(a, n, (a**(n-1)) % n)
-    if ((a**(n-1)) % n == 1):
-        return True
-    else:
-        return False
-
 def is_prime(n):
     """
     Tests to see if a number is prime.
@@ -18,17 +11,13 @@ def is_prime(n):
     False
     """
     isPrime = True
-    lala = 1
-    for i in range(0,100):
-        while True:
-            lala = random.randint(1,1000000000000)
-            if lala % n != 0:
-                break
-        if testFerma(lala,n):
-            continue
-        else:
-            isPrime = False
-            break
+    if n % 2 = 0:
+        return False
+    i = 3
+    while i <= sqrt(n):
+        if n%i == 0:
+            return False
+        i += 2
     return isPrime
 
 
@@ -83,10 +72,6 @@ def multiplicative_inverse(e, phi):
         arr[4][counter] = arr[5][counter+1]
         arr[5][counter] = arr[4][counter+1] - arr[4][counter]*(arr[3][counter])
         counter -= 1
-    #for i in range(lala):
-    #    for j in range(6):
-    #    print(arr[j][i], end=' ')
-    #    print('')
     return (arr[5][0]+phi)%phi
 
 
@@ -97,10 +82,8 @@ def generate_keypair(p, q):
         raise ValueError('p and q cannot be equal')
 
     n = p*q
-    # PUT YOUR CODE HERE
 
     phi = (p-1)*(q-1)
-    # PUT YOUR CODE HERE
 
     # Choose an integer e such that e and phi(n) are coprime
     e = random.randrange(1, phi)
