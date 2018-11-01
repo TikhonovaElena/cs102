@@ -1,16 +1,17 @@
 import random
 import time
 import multiprocessing
+from typing import List, Tuple, Set
 
 
-def read_sudoku(filename):
+def read_sudoku(filename: str) -> List[List[str]]:
     """ Прочитать Судоку из указанного файла """
     digits = [c for c in open(filename).read() if c in '123456789.']
     grid = group(digits, 9)
     return grid
 
 
-def display(values):
+def display(values: List[List[str]]) -> None:
     """Вывод Судоку """
     width = 2
     line = '+'.join(['-' * (width * 3)] * 3)
@@ -23,7 +24,7 @@ def display(values):
     print()
 
 
-def group(values, n):
+def group(values: List[str], n: int) -> List[List[str]]:
     """
     Сгруппировать значения values в список, состоящий из списков по n элементов
 
@@ -36,7 +37,7 @@ def group(values, n):
     return grid
 
 
-def get_row(values, pos):
+def get_row(values: List[List[str]], pos: Tuple[int, int]) -> List[str]:
     """ Возвращает все значения для номера строки, указанной в pos
 
     >>> get_row([['1', '2', '.'], ['4', '5', '6'], ['7', '8', '9']], (0, 0))
@@ -49,7 +50,7 @@ def get_row(values, pos):
     return values[pos[0]]
 
 
-def get_col(values, pos):
+def get_col(values: List[List[str]], pos: Tuple[int, int]) -> List[str]:
     """ Возвращает все значения для номера столбца, указанного в pos
 
     >>> get_col([['1', '2', '.'], ['4', '5', '6'], ['7', '8', '9']], (0, 0))
@@ -64,7 +65,7 @@ def get_col(values, pos):
     return column
 
 
-def get_block(values, pos):
+def get_block(values: List[List[str]], pos: Tuple[int, int]) -> List[str]:
     """ Возвращает все значения из квадрата, в который попадает позиция pos
 
     >>> grid = read_sudoku('puzzle1.txt')
@@ -81,7 +82,7 @@ def get_block(values, pos):
     return block[0] + block[1] + block[2]
 
 
-def find_empty_positions(grid):
+def find_empty_positions(grid: List[List[str]]) -> Tuple[int, int]:
     """ Найти первую свободную позицию в пазле
 
     >>> find_empty_positions([
@@ -104,10 +105,13 @@ def find_empty_positions(grid):
         for col in range(len(grid[row])):
             if grid[row][col] == '.':
                 return (row, col)
-    return None
+    return (0, 0)
 
 
-def find_possible_values(grid, pos):
+def find_possible_values(
+        grid: List[List[str]],
+        pos: Tuple[int, int]
+    ) -> Set[str]:
     """ Вернуть множество возможных значения для указанной позиции
 
     >>> grid = read_sudoku('puzzle1.txt')
@@ -127,7 +131,7 @@ def find_possible_values(grid, pos):
     return values
 
 
-def solve(grid):
+def solve(grid: List[List[str]]) -> List[List[str]]:
     """ Решение пазла, заданного в grid """
     """ Как решать Судоку?
         1. Найти свободную позицию
@@ -158,10 +162,10 @@ def solve(grid):
             grid[pos[0] + 1:])
         if solution:
             return solution
-    return None
+    return grid
 
 
-def check_solution(solution):
+def check_solution(solution: List[List[str]]) -> bool:
     """ Если решение solution верно,
     то вернуть True, в противном случае False"""
     """
@@ -205,7 +209,7 @@ def check_solution(solution):
     return True
 
 
-def generate_sudoku(N):
+def generate_sudoku(N: int) -> List[List[str]]:
     """ Генерация судоку заполненного на N элементов
     Генерация осуществляется в два шага:
     1) Сперва создается уже заполненный с помощью поворотов,
@@ -244,7 +248,7 @@ def generate_sudoku(N):
     return grid
 
 
-def tilt(grid):
+def tilt(grid: List[List[str]]) -> List[List[str]]:
     """
     Поворачивает судоку на 90 грудусов
     """
@@ -257,7 +261,7 @@ def tilt(grid):
     return grid_result
 
 
-def swap_lines(grid):
+def swap_lines(grid: List[List[str]]) -> List[List[str]]:
     """
     меняет местами две случайные строки (они должны быть в одной тройке,
     то есть их номера в одной из групп 0-2, 3-5, 6-8)
@@ -275,14 +279,14 @@ def swap_lines(grid):
     return grid_result
 
 
-def swap_columns(grid):
+def swap_columns(grid: List[List[str]]) -> List[List[str]]:
     """
     аналогично функции swap_lines меняет местами два столбца
     """
     return tilt(swap_lines(tilt(grid)))
 
 
-def swap_lines_x3(grid):
+def swap_lines_x3(grid: List[List[str]]) -> List[List[str]]:
     """
     меняет местами две случайные тройки рядов
     (у троек номера рядов 0-2, 3-5 или 6-8)
@@ -300,7 +304,7 @@ def swap_lines_x3(grid):
     return grid_result
 
 
-def swap_columns_x3(grid):
+def swap_columns_x3(grid: List[List[str]]) -> List[List[str]]:
     """
     меняет местами две тройки столбцов
     (у троек номера рядов 0-2, 3-5 или 6-8)
@@ -308,7 +312,7 @@ def swap_columns_x3(grid):
     return tilt(swap_lines_x3(tilt(grid)))
 
 
-def mix(grid, amt=10):
+def mix(grid: List[List[str]], amt:int=10) -> List[List[str]]:
     """
     применяет к судоку несколько различных преобразований (не нарушающих
     "правильность" головоломки) из 5 возможных: поворот
@@ -330,7 +334,7 @@ def mix(grid, amt=10):
     return grid
 
 
-def run_solve(fname):
+def run_solve(fname: str) -> None:
     grid = read_sudoku(fname)
     start = time.time()
     solve(grid)
