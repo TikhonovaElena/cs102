@@ -32,12 +32,7 @@ def group(values, n):
     >>> group([1,2,3,4,5,6,7,8,9], 3)
     [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
     """
-    grid = []
-    for i in range(n):
-        line = []
-        for j in range(n):
-            line.append(values[i * n + j])
-        grid.append(line)
+    grid = [[values[row * n + col] for col in range(n)] for row in range(n)]
     return grid
 
 
@@ -64,9 +59,8 @@ def get_col(values, pos):
     >>> get_col([['1', '2', '3'], ['4', '5', '6'], ['.', '8', '9']], (0, 2))
     ['3', '6', '9']
     """
-    column = []
-    for i in range(len(values)):
-        column.append(values[i][pos[1]])
+    col = pos[1]
+    column = [row[col] for row in values]
     return column
 
 
@@ -81,11 +75,10 @@ def get_block(values, pos):
     >>> get_block(grid, (8, 8))
     ['2', '8', '.', '.', '.', '5', '.', '7', '9']
     """
-    block = []
-    for i in range(len(values)):
-        block.append(
-            values[(pos[0] // 3) * 3 + i // 3][(pos[1] // 3) * 3 + i % 3])
-    return block
+    rows = [(pos[0] // 3) * 3 + i for i in range(3)]
+    cols = [(pos[1] // 3) * 3 + i for i in range(3)]
+    block = [[values[row][col] for col in cols] for row in rows]
+    return block[0] + block[1] + block[2]
 
 
 def find_empty_positions(grid):
@@ -107,10 +100,10 @@ def find_empty_positions(grid):
         ['.', '8', '9']])
     (2, 0)
     """
-    for i in range(len(grid)):
-        for j in range(len(grid[i])):
-            if grid[i][j] == '.':
-                return (i, j)
+    for row in range(len(grid)):
+        for col in range(len(grid[row])):
+            if grid[row][col] == '.':
+                return (row, col)
     return None
 
 
@@ -125,13 +118,12 @@ def find_possible_values(grid, pos):
     >>> values == {'2', '5', '9'}
     True
     """
-    values = {'1', '2', '3', '4', '5', '6', '7', '8', '9'}
-    for value in get_col(grid, pos):
-        values.discard(value)
-    for value in get_row(grid, pos):
-        values.discard(value)
-    for value in get_block(grid, pos):
-        values.discard(value)
+    values = set('123456789')
+    values -= (
+            set(get_block(grid, pos)) |
+            set(get_col(grid, pos)) |
+            set(get_row(grid, pos))
+        )
     return values
 
 
@@ -202,20 +194,27 @@ def check_solution(solution):
     True
     """
     for i in range(9):
-        if {'1', '2', '3', '4', '5', '6', '7', '8', '9'} !=
-        set(get_row(solution, (0, i))):
+        if set('123456789') != set(get_row(solution, (0, i))):
             return False
-        if {'1', '2', '3', '4', '5', '6', '7', '8', '9'} !=
-        set(get_col(solution, (i, 0))):
+        if set('123456789') != set(get_col(solution, (i, 0))):
             return False
-        if {'1', '2', '3', '4', '5', '6', '7', '8', '9'} !=
-        set(get_block(solution, (i // 3 * 3, i % 3 * 3))):
+        if set('123456789') != set(
+                get_block(solution, (i // 3 * 3, i % 3 * 3))
+                ):
             return False
     return True
 
 
 def generate_sudoku(N):
     """ Генерация судоку заполненного на N элементов
+    Генерация осуществляется в два шага:
+    1) Сперва создается уже заполненный с помощью поворотов,
+    замены одного ряда (столбца) на другой, заменой тройки
+    (номера рядов/строк 0-2, 3-5, 6-8 - какой-нибудь из этих) рядов (столбцов)
+    на другие
+    Эти изменения не нарушают "правильность"" судоку
+    2) Затем из заполненного судоку удаляется необходимое
+    количество цифр
 
     >>> grid = generate_sudoku(40)
     >>> sum(1 for row in grid for e in row if e == '.')
@@ -246,6 +245,9 @@ def generate_sudoku(N):
 
 
 def tilt(grid):
+    """
+    Поворачивает судоку на 90 грудусов
+    """
     grid_result = []
     for i in range(9):
         grid_line = []
@@ -256,6 +258,10 @@ def tilt(grid):
 
 
 def swap_lines(grid):
+    """
+    меняет местами две случайные строки (они должны быть в одной тройке,
+    то есть их номера в одной из групп 0-2, 3-5, 6-8)
+    """
     grid_result = []
     row = random.randint(0, 8)
     row_swap = (row % 3 + random.randint(1, 2)) % 3 + (row // 3) * 3
@@ -270,11 +276,17 @@ def swap_lines(grid):
 
 
 def swap_columns(grid):
+    """
+    аналогично функции swap_lines меняет местами два столбца
+    """
     return tilt(swap_lines(tilt(grid)))
 
 
 def swap_lines_x3(grid):
-    # Здесь один ряд  - это три ряда
+    """
+    меняет местами две случайные тройки рядов
+    (у троек номера рядов 0-2, 3-5 или 6-8)
+    """
     grid_result = []
     row = random.randint(0, 2)
     row_swap = (row + random.randint(1, 2)) % 3
@@ -289,10 +301,20 @@ def swap_lines_x3(grid):
 
 
 def swap_columns_x3(grid):
+    """
+    меняет местами две тройки столбцов
+    (у троек номера рядов 0-2, 3-5 или 6-8)
+    """
     return tilt(swap_lines_x3(tilt(grid)))
 
 
 def mix(grid, amt=10):
+    """
+    применяет к судоку несколько различных преобразований (не нарушающих
+    "правильность" головоломки) из 5 возможных: поворот
+    поменять местами два ряда/столбца, поменять местами две тройки
+    рядов/столбцов
+    """
     if amt != 0:
         action = random.randint(0, 4)
         if action == 0:
@@ -304,7 +326,7 @@ def mix(grid, amt=10):
         elif action == 3:
             return mix(swap_lines_x3(grid), amt - 1)
         else:
-            return mix(swap_columns_x3(grid), amt - S1)
+            return mix(swap_columns_x3(grid), amt - 1)
     return grid
 
 
