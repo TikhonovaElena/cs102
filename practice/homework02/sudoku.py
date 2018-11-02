@@ -1,7 +1,7 @@
 import random
 import time
 import multiprocessing
-from typing import List, Tuple, Set
+from typing import List, Tuple, Set, Optional
 
 
 def read_sudoku(filename: str) -> List[List[str]]:
@@ -82,7 +82,7 @@ def get_block(values: List[List[str]], pos: Tuple[int, int]) -> List[str]:
     return block[0] + block[1] + block[2]
 
 
-def find_empty_positions(grid: List[List[str]]) -> Tuple[int, int]:
+def find_empty_positions(grid: List[List[str]]) -> Optional[Tuple[int, int]]:
     """ Найти первую свободную позицию в пазле
 
     >>> find_empty_positions([
@@ -105,7 +105,7 @@ def find_empty_positions(grid: List[List[str]]) -> Tuple[int, int]:
         for col in range(len(grid[row])):
             if grid[row][col] == '.':
                 return (row, col)
-    return (0, 0)
+    return None
 
 
 def find_possible_values(
