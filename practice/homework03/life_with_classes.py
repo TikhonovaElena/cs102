@@ -2,11 +2,14 @@ import pygame
 from pygame.locals import *
 import random
 from copy import deepcopy
+from typing import List
 
 
 class GameOfLife:
 
-    def __init__(self, width=640, height=480, cell_size=10, speed=10):
+    def __init__(
+            self, width: int=640, height: int=480, cell_size: int=10,
+            speed: int=10) -> None:
         self.width = width
         self.height = height
         self.cell_size = cell_size
@@ -23,16 +26,16 @@ class GameOfLife:
         # Скорость протекания игры
         self.speed = speed
 
-    def draw_grid(self):
+    def draw_grid(self) -> None:
         """ Отрисовать сетку """
         for x in range(0, self.width, self.cell_size):
-            pygame.draw.line(self.screen, pygame.Color('black'),
-                    (x, 0), (x, self.height))
+            pygame.draw.line(
+                self.screen, pygame.Color('black'), (x, 0), (x, self.height))
         for y in range(0, self.height, self.cell_size):
-            pygame.draw.line(self.screen, pygame.Color('black'),
-                    (0, y), (self.width, y))
+            pygame.draw.line(
+                self.screen, pygame.Color('black'), (0, y), (self.width, y))
 
-    def run(self):
+    def run(self) -> None:
         """ Запустить игру """
         pygame.init()
         clock = pygame.time.Clock()
@@ -60,24 +63,24 @@ class GameOfLife:
 
 class Cell:
 
-    def __init__(self, row, col, state=False):
+    def __init__(self, row: int, col: int, state: bool=False) -> None:
         pass
 
-    def is_alive(self):
+    def is_alive(self) -> bool:
         pass
 
 
 class CellList:
 
-    def __init__(self, nrows, ncols, randomize=False):
+    def __init__(self, nrows: int, ncols: int, randomize: bool=False) -> None:
         pass
 
-    def get_neighbours(self, cell):
+    def get_neighbours(self, cell: Cell) -> List[Cell]:
         neighbours = []
         # PUT YOUR CODE HERE
         return neighbours
 
-    def update(self):
+    def update(self) -> CellList:
         new_clist = deepcopy(self)
         # PUT YOUR CODE HERE
         return self
@@ -94,4 +97,3 @@ class CellList:
     @classmethod
     def from_file(cls, filename):
         pass
-
