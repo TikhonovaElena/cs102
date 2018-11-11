@@ -64,16 +64,30 @@ class GameOfLife:
 class Cell:
 
     def __init__(self, row: int, col: int, state: bool=False) -> None:
-        pass
+        self.row = row
+        self.col = col
+        self.state = bool
 
     def is_alive(self) -> bool:
-        pass
+        return self.state
 
 
 class CellList:
 
-    def __init__(self, nrows: int, ncols: int, randomize: bool=False) -> None:
-        pass
+    def __init__(
+            self, nrows: int, ncols: int, randomize: bool=False,
+            filename: str='grid.txt') -> None:
+        self.nrows = nrows
+        self.ncols = ncols
+        self.row = 0
+        self.col = 0
+        if randomize:
+            self.clist = [
+                [Cell(row, col, random.randint(0,1)) for col in range(self.ncols)]
+                for row in range(self.nrows)]
+        else:
+            self.clist = from_file(filename)
+
 
     def get_neighbours(self, cell: Cell) -> List[Cell]:
         neighbours = []
@@ -86,14 +100,26 @@ class CellList:
         return self
 
     def __iter__(self):
-        pass
+        return self
 
     def __next__(self):
-        pass
+        if self.row < self.nrows:
+            if self.col < self.ncols:
+                self.col += 1
+                return self.clist[self.row][self.col]
+            else:
+                self.row += 1
+                self.col = 0
+                self.__next__()
+        else:
+            raise StopIteration
 
     def __str__(self):
         pass
 
     @classmethod
     def from_file(cls, filename):
-        pass
+        file = open(filename, 'r')
+        clist = [[int(char) for char in line[:lem(line)-1]] for line in file]
+        return clist
+
