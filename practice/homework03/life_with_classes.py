@@ -5,6 +5,84 @@ from copy import deepcopy
 from typing import List
 
 
+class Cell:
+
+    def __init__(self, row: int, col: int, state: bool=False) -> None:
+        self.row = row
+        self.col = col
+        self.state = bool
+
+    def is_alive(self) -> bool:
+        return self.state
+
+
+class CellList:
+
+    def __init__(
+            self, nrows: int, ncols: int, randomize: bool=False,
+            filename: str='grid.txt') -> None:
+        self.nrows = nrows
+        self.ncols = ncols
+        self.row = 0
+        self.col = 0
+        self.clist = []
+        if randomize:
+            self.clist = [
+                [Cell(row, col, random.randint(0,1)) for col in range(self.ncols)]
+                for row in range(self.nrows)]
+        else:
+            self.clist = from_file(filename)
+
+
+    def get_neighbours(self, cell: Cell) -> List[Cell]:
+        neighbours = []
+        for row in range(cell.row-1, cell.row+2):
+            for col in range(cell.col-1, cell.col+2):
+                if ((0 <= row < self.nrows) and
+                (0 <= col < self.ncols) and
+                (row != cell.row or col != cell.col) and
+                self.clist[row][col].is_alive()):
+                    neighbours.append(self.clist[row][col])
+        return neighbours
+
+    def will_alive(self, cell: Cell) -> bool:
+        neighbours = self.get_neighbours(cell)
+        if (len(neighbours) == 3 or
+        (len(neighbours) == 2 and cell.is_alive())):
+            return True
+        return False
+
+    def update(self):
+        new_clist = CellList(self.nrows, self.ncols, randomize=True)
+        new_clist.clist = [
+            Cell(cell.row, cell.col, self.will_alive(cell)) for cell in self]
+        return new_clist
+
+    def __iter__(self):
+        return self
+
+    def __next__(self) -> Cell:
+        if self.row < self.nrows:
+            if self.col < self.ncols:
+                self.col += 1
+                return self.clist[self.row][self.col-1]
+            else:
+                self.row += 1
+                self.col = 0
+                return self.__next__()
+        else:
+            raise StopIteration
+
+    def __str__(self):
+        pass
+
+    @classmethod
+    def from_file(cls, filename):
+        file = open(filename, 'r')
+        clist = [[int(char) for char in line[:lem(line)-1]] for line in file]
+        return clist
+
+
 class GameOfLife:
 
     def __init__(
@@ -35,6 +113,17 @@ class GameOfLife:
             pygame.draw.line(
                 self.screen, pygame.Color('black'), (0, y), (self.width, y))
 
+    def draw_cell_list(self, cellList: CellList) -> None:
+        """ Отображение списка клеток """
+        for cell in cellList:
+                rect = (
+                    self.cell_size * cell.col, self.cell_size * cell.row,
+                    self.cell_size, self.cell_size)
+                color = (
+                    pygame.Color('green') if cell.is_alive() else
+                    pygame.Color('white'))
+                pygame.draw.rect(self.screen, color, rect)
+
     def run(self) -> None:
         """ Запустить игру """
         pygame.init()
@@ -43,7 +132,10 @@ class GameOfLife:
         self.screen.fill(pygame.Color('white'))
 
         # Создание списка клеток
-        # PUT YOUR CODE HERE
+        cellList = CellList(
+            nrows=self.height//self.cell_size,
+            ncols=self.width//self.cell_size, randomize=True
+        )
 
         running = True
         while running:
@@ -54,72 +146,8 @@ class GameOfLife:
 
             # Отрисовка списка клеток
             # Выполнение одного шага игры (обновление состояния ячеек)
-            # PUT YOUR CODE HERE
+            self.draw_cell_list(cellList.update())
 
             pygame.display.flip()
             clock.tick(self.speed)
         pygame.quit()
-
-
-class Cell:
-
-    def __init__(self, row: int, col: int, state: bool=False) -> None:
-        self.row = row
-        self.col = col
-        self.state = bool
-
-    def is_alive(self) -> bool:
-        return self.state
-
-
-class CellList:
-
-    def __init__(
-            self, nrows: int, ncols: int, randomize: bool=False,
-            filename: str='grid.txt') -> None:
-        self.nrows = nrows
-        self.ncols = ncols
-        self.row = 0
-        self.col = 0
-        if randomize:
-            self.clist = [
-                [Cell(row, col, random.randint(0,1)) for col in range(self.ncols)]
-                for row in range(self.nrows)]
-        else:
-            self.clist = from_file(filename)
-
-
-    def get_neighbours(self, cell: Cell) -> List[Cell]:
-        neighbours = []
-        # PUT YOUR CODE HERE
-        return neighbours
-
-    def update(self) -> CellList:
-        new_clist = deepcopy(self)
-        # PUT YOUR CODE HERE
-        return self
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        if self.row < self.nrows:
-            if self.col < self.ncols:
-                self.col += 1
-                return self.clist[self.row][self.col]
-            else:
-                self.row += 1
-                self.col = 0
-                self.__next__()
-        else:
-            raise StopIteration
-
-    def __str__(self):
-        pass
-
-    @classmethod
-    def from_file(cls, filename):
-        file = open(filename, 'r')
-        clist = [[int(char) for char in line[:lem(line)-1]] for line in file]
-        return clist
-
