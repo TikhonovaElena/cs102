@@ -34,7 +34,7 @@ class CellList:
             self.clist = from_file(filename)
 
 
-    def get_neighbours(self, cell: Cell) -> List[Cell]:
+    def get_neighbours(self, cell: Cell) -> List[List[Cell]]:
         neighbours = []
         for row in range(cell.row-1, cell.row+2):
             for col in range(cell.col-1, cell.col+2):
@@ -55,17 +55,21 @@ class CellList:
     def update(self):
         new_clist = CellList(self.nrows, self.ncols, randomize=True)
         new_clist.clist = [
-            Cell(cell.row, cell.col, self.will_alive(cell)) for cell in self]
+            [Cell(cell.row, cell.col, self.will_alive(cell)) for cell in line]
+            for line in self.clist]
         return new_clist
 
     def __iter__(self):
+        self.row = 0
+        self.col = 0
         return self
 
     def __next__(self) -> Cell:
         if self.row < self.nrows:
             if self.col < self.ncols:
                 self.col += 1
-                return self.clist[self.row][self.col-1]
+                cell = self.clist[self.row][self.col-1]
+                return cell
             else:
                 self.row += 1
                 self.col = 0
