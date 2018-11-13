@@ -10,7 +10,7 @@ class Cell:
     def __init__(self, row: int, col: int, state: bool=False) -> None:
         self.row = row
         self.col = col
-        self.state = bool
+        self.state = state
 
     def is_alive(self) -> bool:
         return self.state
@@ -53,10 +53,14 @@ class CellList:
         return False
 
     def update(self):
+        """
+        Возвращает новый CellList с новым списком клеток внутри
+        """
         new_clist = CellList(self.nrows, self.ncols, randomize=True)
         new_clist.clist = [
-            [Cell(cell.row, cell.col, self.will_alive(cell)) for cell in line]
-            for line in self.clist]
+            [Cell(row, col, self.will_alive(self.clist[row][col]))
+            for col in range(self.ncols)]
+            for row in range(self.nrows)]
         return new_clist
 
     def __iter__(self):
@@ -150,7 +154,8 @@ class GameOfLife:
 
             # Отрисовка списка клеток
             # Выполнение одного шага игры (обновление состояния ячеек)
-            self.draw_cell_list(cellList.update())
+            cellList = cellList.update()
+            self.draw_cell_list(CellList)
 
             pygame.display.flip()
             clock.tick(self.speed)
