@@ -20,7 +20,7 @@ class CellList:
 
     def __init__(
             self, nrows: int, ncols: int, randomize: bool=False,
-            filename: str='grid.txt') -> None:
+            fromFile: bool=False, *filename: str) -> None:
         self.nrows = nrows
         self.ncols = ncols
         self.row = 0
@@ -30,7 +30,7 @@ class CellList:
             self.clist = [
                 [Cell(row, col, random.randint(0,1)) for col in range(self.ncols)]
                 for row in range(self.nrows)]
-        else:
+        elif fromFile:
             self.clist = from_file(filename)
 
 
@@ -56,7 +56,7 @@ class CellList:
         """
         Возвращает новый CellList с новым списком клеток внутри
         """
-        new_clist = CellList(self.nrows, self.ncols, randomize=True)
+        new_clist = CellList(self.nrows, self.ncols)
         new_clist.clist = [
             [Cell(row, col, self.will_alive(self.clist[row][col]))
             for col in range(self.ncols)]
@@ -87,7 +87,7 @@ class CellList:
     @classmethod
     def from_file(cls, filename):
         file = open(filename, 'r')
-        clist = [[int(char) for char in line[:lem(line)-1]] for line in file]
+        clist = [[int(char) for char in line[:len(line)-1]] for line in file]
         return clist
 
 
@@ -155,7 +155,7 @@ class GameOfLife:
             # Отрисовка списка клеток
             # Выполнение одного шага игры (обновление состояния ячеек)
             cellList = cellList.update()
-            self.draw_cell_list(CellList)
+            self.draw_cell_list(cellList)
 
             pygame.display.flip()
             clock.tick(self.speed)
