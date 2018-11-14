@@ -20,35 +20,39 @@ class CellList:
 
     def __init__(
             self, nrows: int, ncols: int, randomize: bool=False,
-            fromFile: bool=False, *filename: str) -> None:
+            fromFile: bool=False, filename: str='grid.txt') -> None:
+        """
+        Если требуется создать новый CellList, то нужно указать
+        randomize = True, либо fromFile = True, иначе будет создан
+        пустой лист
+        """
         self.nrows = nrows
         self.ncols = ncols
         self.row = 0
         self.col = 0
-        self.clist = []
+        self.clist: List[List[Cell]] = [[]]
         if randomize:
-            self.clist = [
-                [Cell(row, col, random.randint(0,1)) for col in range(self.ncols)]
-                for row in range(self.nrows)]
+            self.clist = [[Cell(
+                row, col, bool(random.randint(0, 1))
+                ) for col in range(self.ncols)] for row in range(self.nrows)]
         elif fromFile:
-            self.clist = from_file(filename)
+            self.clist = self.from_file(filename)
 
-
-    def get_neighbours(self, cell: Cell) -> List[List[Cell]]:
+    def get_neighbours(self, cell: Cell) -> List[Cell]:
         neighbours = []
         for row in range(cell.row-1, cell.row+2):
             for col in range(cell.col-1, cell.col+2):
                 if ((0 <= row < self.nrows) and
-                (0 <= col < self.ncols) and
-                (row != cell.row or col != cell.col) and
-                self.clist[row][col].is_alive()):
+                        (0 <= col < self.ncols) and
+                        (row != cell.row or col != cell.col) and
+                        self.clist[row][col].is_alive()):
                     neighbours.append(self.clist[row][col])
         return neighbours
 
     def will_alive(self, cell: Cell) -> bool:
         neighbours = self.get_neighbours(cell)
         if (len(neighbours) == 3 or
-        (len(neighbours) == 2 and cell.is_alive())):
+                (len(neighbours) == 2 and cell.is_alive())):
             return True
         return False
 
@@ -59,8 +63,7 @@ class CellList:
         new_clist = CellList(self.nrows, self.ncols)
         new_clist.clist = [
             [Cell(row, col, self.will_alive(self.clist[row][col]))
-            for col in range(self.ncols)]
-            for row in range(self.nrows)]
+                for col in range(self.ncols)] for row in range(self.nrows)]
         return new_clist
 
     def __iter__(self):
@@ -93,11 +96,16 @@ class CellList:
                 row = []
         return str_grid[:len(str_grid)-2] + ']'
 
-
     @classmethod
-    def from_file(cls, filename):
+    def from_file(cls, filename) -> List[List[Cell]]:
+        """
+        Превращает нули и единицы в файле в мртвые/живые клетки
+        """
         file = open(filename, 'r')
-        clist = [[int(char) for char in line[:len(line)-1]] for line in file]
+        grid = [[char for char in line[:len(line)-1]] for line in file]
+        clist = [[Cell(
+            row, col, True if grid[row][col] == "1" else False
+            ) for col in range(len(grid[0]))] for row in range(len(grid))]
         return clist
 
 
@@ -138,7 +146,7 @@ class GameOfLife:
                     self.cell_size * cell.col, self.cell_size * cell.row,
                     self.cell_size, self.cell_size)
                 color = (
-                    pygame.Color('green') if cell.is_alive() else
+                    pygame.Color('#00cc50') if cell.is_alive() else
                     pygame.Color('white'))
                 pygame.draw.rect(self.screen, color, rect)
 
