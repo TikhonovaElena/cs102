@@ -82,7 +82,17 @@ class CellList:
             raise StopIteration
 
     def __str__(self):
-        pass
+        row = []
+        grid = []
+        str_grid = '['
+        for cell in self:
+            row.append(1 if cell.is_alive() else 0)
+            if len(row) == self.nrows:
+                grid.append(row)
+                str_grid = str_grid + str(row) + '\n '
+                row = []
+        return str_grid[:len(str_grid)-2] + ']'
+
 
     @classmethod
     def from_file(cls, filename):
