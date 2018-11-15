@@ -87,7 +87,7 @@ class CellList:
         row = []
         grid = []
         for cell in self:
-            row.append(1 if cell.is_alive() else 0)
+            row.append(int(cell.is_alive()))
             if len(row) == self.nrows:
                 grid.append(row)
                 row = []
@@ -96,16 +96,15 @@ class CellList:
     @classmethod
     def from_file(cls, filename):
         """
-        Превращает нули и единицы в файле в мртвые/живые клетки
+        Превращает нули и единицы в файле в мeртвые/живые клетки
         """
-        file = open(filename, 'r')
-        grid = [[char for char in line[:len(line)-1]] for line in file]
-        cellList = CellList(len(grid), len(grid[0]))
-        cellList.clist = [[Cell(
-            row, col, True if grid[row][col] == "1" else False
-            ) for col in range(len(grid[0]))] for row in range(len(grid))]
-        return cellList
-
+        with open(filename, 'r') as file:
+            grid = [[char for char in line[:len(line)-1]] for line in file]
+            cellList = CellList(len(grid), len(grid[0]))
+            cellList.clist = [[Cell(
+                row, col, True if grid[row][col] == "1" else False
+                ) for col in range(len(grid[0]))] for row in range(len(grid))]
+            return cellList
 
 class GameOfLife:
 
