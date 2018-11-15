@@ -1,16 +1,19 @@
 import requests
 from datetime import datetime
 import plotly
+import json
 
 
 config = {
-    'VK_ACCESS_TOKEN': 'Tокен доступа для ВК',
+    'VK_ACCESS_TOKEN': '',
     'PLOTLY_USERNAME': 'Имя пользователя Plot.ly',
-    'PLOTLY_API_KEY': 'Ключ доступа Plot.ly'
+    'PLOTLY_API_KEY': 'Ключ доступа Plot.ly',
+    'API_URL': 'https://api.vk.com/method/'
 }
 
 
 def get(url, params={}, timeout=5, max_retries=5, backoff_factor=0.3):
+    pass
     """ Выполнить GET-запрос
 
     :param url: адрес, на который необходимо выполнить запрос
@@ -31,7 +34,13 @@ def get_friends(user_id, fields):
     assert isinstance(user_id, int), "user_id must be positive integer"
     assert isinstance(fields, str), "fields must be string"
     assert user_id > 0, "user_id must be positive integer"
-    # PUT YOUR CODE HERE
+    response = requests.get(
+        config['API_URL'] + 'friends.get?user_id=' + str(user_id) +
+        '&fields=' + fields + '&access_token=' +
+        config['VK_ACCESS_TOKEN'] + '&v=5.87')
+    response = json.loads(response.text)
+    friends = response['response']
+    return friends
 
 
 def age_predict(user_id):
@@ -62,6 +71,7 @@ def messages_get_history(user_id, offset=0, count=20):
 
 
 def count_dates_from_messages(messages):
+    pass
     """ Получить список дат и их частот
 
     :param messages: список сообщений
@@ -70,6 +80,7 @@ def count_dates_from_messages(messages):
 
 
 def plotly_messages_freq(freq_list):
+    pass
     """ Построение графика с помощью Plot.ly
 
     :param freq_list: список дат и их частот
@@ -78,8 +89,10 @@ def plotly_messages_freq(freq_list):
 
 
 def get_network(users_ids, as_edgelist=True):
+    pass
     # PUT YOUR CODE HERE
 
 
 def plot_graph(graph):
+    pass
     # PUT YOUR CODE HERE
