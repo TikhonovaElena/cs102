@@ -16,5 +16,6 @@ def age_predict(user_id: int) -> Optional[float]:
     """
     assert isinstance(user_id, int), "user_id must be positive integer"
     assert user_id > 0, "user_id must be positive integer"
-    # PUT YOUR CODE HERE
-
+    bdates = get_friends(user_id)
+    byears = [date[2] for date in bdates]
+    return dt.date.today().year - int(median(byears))
