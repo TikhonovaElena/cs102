@@ -1,6 +1,7 @@
 import requests
 import time
 import config
+from api_models import Message
 
 
 def get(url, params={}, timeout=5, max_retries=5, backoff_factor=0.3):
@@ -12,7 +13,16 @@ def get(url, params={}, timeout=5, max_retries=5, backoff_factor=0.3):
     :param max_retries: максимальное число повторных запросов
     :param backoff_factor: коэффициент экспоненциального нарастания задержки
     """
-    # PUT YOUR CODE HERE
+    for attempt in range(max_retries):
+        try:
+            res = requests.get(url, params=params, timeout=timeout)
+            return res
+        except requests.exceptions.RequestException:
+            if attempt == max_retries - 1:
+                raise
+            backoff_value = backoff_factor * (2 ** attempt)
+            time.sleep(backoff_value)
+
 
 def get_friends(user_id, fields='bdate'):
     """ Вернуть данных о друзьях пользователя
@@ -32,26 +42,15 @@ def get_friends(user_id, fields='bdate'):
     }
 
     query = "{domain}/friends.get?access_token={access_token}&user_id={user_id}&fields={fields}&v=5.53".format(**query_params)
-    response = requests.get(query)
-    people = response.json()['response']['items']
-    bdates = []
-    for person in people:
-        try:
-            bdate = person['bdate'].split('.')
-            if len(bdate) == 3:
-                #print(person['id'], person['first_name'], person['bdate'].split('.'))
-                bdates.append([
-                    int(bdate[0]),
-                    int(bdate[1]),
-                    int(bdate[2]),
-                    ])
-        except KeyError:
-            pass
-    return bdates
-    # PUT YOUR CODE HERE
+    response = get(query, query_params)
+    response = response.json()
+    error = response.get('error')
+    if error:
+        raise Exception(response['error']['error_msg'])
+    return response['response']['items']
 
 
-def messages_get_history(user_id, offset=0, count=20):
+def messages_get_history(user_id, offset=0, count=200, amount=5000):
     """ Получить историю переписки с указанным пользователем
 
     :param user_id: идентификатор пользователя, с которым нужно получить историю переписки
@@ -61,8 +60,8 @@ def messages_get_history(user_id, offset=0, count=20):
     assert isinstance(user_id, int), "user_id must be positive integer"
     assert user_id > 0, "user_id must be positive integer"
     assert isinstance(offset, int), "offset must be positive integer"
-    assert offset >= 0, "user_id must be positive integer"
-    assert count >= 0, "user_id must be positive integer"
+    assert offset >= 0, "offset must be positive integer"
+    assert count >= 0, "count must be positive integer"
     
     query_params = {
         'domain' : config.VK_CONFIG['domain'],
@@ -72,10 +71,28 @@ def messages_get_history(user_id, offset=0, count=20):
         'count': count
     }
 
-    query = "{domain}/messages.getHistory?access_token={access_token}&user_id={user_id}&fields={offset}&v=5.53".format(**query_params)
-    response = requests.get(query)
-    messages = response.json()['response']['items']
-    print(messages)
-    print("{domain}/messages.getHistory?access_token={access_token}&user_id={user_id}&fields={offset}&v=5.53".format(**query_params))
-
-messages_get_history(194487415)
+    query = "{domain}/messages.getHistory?access_token={access_token}\
+&user_id={user_id}&v=5.53".format(**query_params)
+    messages = []
+    try:
+        response = get(query)
+        response = response.json()
+        error = response.get('error')
+        if error:
+            raise Exception(response['error']['error_msg'])
+        while amount > 0:
+            query = "{domain}/messages.getHistory?access_token={access_token}\
+&user_id={user_id}&offset={offset}&count={count}\
+&v=5.53".format(**query_params)
+            response = get(query)
+            response = response.json()
+            error = response.get('error')
+            if error:
+                raise Exception(response['error']['error_msg'])
+            messages.extend(response['response']['items'])
+            amount -= count
+            query_params['offset'] += count
+            query_params['count'] = min(amount, count)
+            time.sleep(0.4)
+    finally:
+        return [Message(**message) for message in messages]
