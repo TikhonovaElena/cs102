@@ -43,14 +43,26 @@ def update_news():
     redirect("/news")
 
 
+@route("/model")
+def create_model():
+    s = session()
+    labeled_news = s.query(News).filter(News.label != None).all()
+    x_train = [clean(news.title) for news in labeled_news]
+    y_train = [news.label for news in labeled_news]
+    classifier = NaiveBayesClassifier(0.05)
+    [labels, model] = classifier.fit(x_train, y_train)
+    return template("news_model", labels=labels, model=model )
+
+
 @route("/classify")
 def classify_news():
     s = session()
-    labeled_news = s.query(News).filter(News.label is not None).all()
+    labeled_news = s.query(News).filter(News.label != None).all()
     x_train = [clean(news.title) for news in labeled_news]
     y_train = [news.label for news in labeled_news]
+    classifier = NaiveBayesClassifier(0.05)
     classifier.fit(x_train, y_train)
-    rows = s.query(News).filter(News.label is None).all()
+    rows = s.query(News).filter(News.label == None).all()
     good, maybe, never = [], [], []
     for row in rows:
         prediction = classifier.predict(clean(row.title))
@@ -65,6 +77,7 @@ def classify_news():
 
 def clean(s):
     translator = str.maketrans("", "", string.punctuation)
+    print(s.translate(translator).lower)
     return s.translate(translator).lower()
 
 
@@ -72,6 +85,5 @@ if __name__ == "__main__":
     path = os.path.dirname(os.path.realpath(__file__))
     views_path = os.path.join(path, "templates")
     bottle.TEMPLATE_PATH.insert(0, views_path)
-    #classifier = NaiveBayesClassifier()
     run(host="localhost", port=8080)
 
